@@ -1,1 +1,1 @@
-# api-blogApp-node-express-mongoose
+# api-blogApp-mongoose-express
