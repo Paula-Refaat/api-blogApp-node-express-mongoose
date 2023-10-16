@@ -6,15 +6,18 @@ const dbConnection = require("./config/database");
 
 dotenv.config({ path: "config.env" });
 
+const authRoute = require("./routes/authRoute");
+const usersRoute = require("./routes/usersRoute");
+
+
 // Connection to db
 dbConnection();
 
 // init app
 const app = express();
 
-
 // test Route
-app.use("/", (req, res, next) => {
+app.get("/", (req, res, next) => {
   res.send("App Running...");
 });
 
@@ -24,6 +27,11 @@ if (process.env.NODE_ENV === "development") {
   console.log(`mode: ${process.env.NODE_ENV}`);
 }
 app.use(express.json());
+
+// Mount Routers
+app.use("/api/auth", authRoute);
+app.use("/api/users", usersRoute);
+
 
 // Running the server
 const PORT = process.env.PORT || 8000;
