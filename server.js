@@ -1,3 +1,5 @@
+const path = require("path");
+
 const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
@@ -27,6 +29,8 @@ if (process.env.NODE_ENV === "development") {
   console.log(`mode: ${process.env.NODE_ENV}`);
 }
 app.use(express.json());
+
+
 
 // Mount Routers
 app.use("/api/auth", authRoute);
