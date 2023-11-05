@@ -29,7 +29,6 @@ if (process.env.NODE_ENV === "development") {
 app.use(express.json());
 
 
-
 // Mount Routers
 app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
