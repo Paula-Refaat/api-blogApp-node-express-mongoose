@@ -4,12 +4,14 @@ const {
   verifyTokenAndAdmin,
   verifyTokenAndOnlyUser,
   verifyToken,
+  verifyTokenAndAuthorization,
 } = require("../middleware/verifyToken");
 const {
   getAllUsers,
   getUserProfile,
   updateUserProfile,
   profilePhotoUpload,
+  deleteUserProfile,
 } = require("../services/userService");
 
 const router = require("express").Router();
@@ -27,6 +29,13 @@ router.post(
   verifyToken,
   photoUpload.single("image"),
   profilePhotoUpload
+);
+
+router.delete(
+  "/profile/:id",
+  validateObjectId,
+  verifyTokenAndAuthorization,
+  deleteUserProfile
 );
 
 module.exports = router;
