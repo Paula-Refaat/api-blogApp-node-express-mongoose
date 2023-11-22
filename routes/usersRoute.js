@@ -22,6 +22,11 @@ router.put(
   verifyTokenAndOnlyUser,
   updateUserProfile
 );
-router.post("/profile/profile-photo-upload", verifyToken, photoUpload.single('image') ,profilePhotoUpload);
+router.post(
+  "/profile/profile-photo-upload",
+  verifyToken,
+  photoUpload.single("image"),
+  profilePhotoUpload
+);
 
 module.exports = router;
