@@ -8,7 +8,7 @@ dotenv.config({ path: "config.env" });
 
 const authRoute = require("./routes/authRoute");
 const usersRoute = require("./routes/usersRoute");
-
+const postRoute = require("./routes/postRoute");
 
 // Connection to db
 dbConnection();
@@ -28,11 +28,10 @@ if (process.env.NODE_ENV === "development") {
 }
 app.use(express.json());
 
-
 // Mount Routers
 app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
-
+app.use("/api/posts", postRoute);
 
 // Running the server
 const PORT = process.env.PORT || 8000;
