@@ -98,6 +98,7 @@ exports.profilePhotoUpload = asyncHandler(async (req, res, next) => {
 // @desc   Delete User Profile (Account)
 // @router  POST /api/users/profile/:id
 // @access  private (only admin or user jims self)
+
 exports.deleteUserProfile = asyncHandler(async (req, res) => {
   // 1. Get the user from DB
   const user = await User.findById(req.params.id);
