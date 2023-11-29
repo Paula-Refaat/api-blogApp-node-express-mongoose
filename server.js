@@ -6,6 +6,7 @@ dotenv.config({ path: "config.env" });
 const dbConnection = require("./config/database");
 
 const ApiError = require("./utils/ApiError");
+const globalError = require("./middleware/errorMiddleware");
 
 const authRoute = require("./routes/authRoute");
 const usersRoute = require("./routes/usersRoute");
@@ -38,6 +39,9 @@ app.use("/api/posts", postRoute);
 app.all("*", (req, res, next) => {
   next(new ApiError(`Can't found this Route : ${req.originalUrl}`, 400));
 });
+
+// Global error handelling middleware
+app.use(globalError);
 
 const PORT = process.env.PORT || 8000;
 const server = app.listen(PORT, () => {
