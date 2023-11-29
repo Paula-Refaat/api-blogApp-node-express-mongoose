@@ -1,10 +1,9 @@
 const express = require("express");
-const dotenv = require("dotenv");
 const morgan = require("morgan");
+const dotenv = require("dotenv");
+dotenv.config({ path: "config.env" });
 
 const dbConnection = require("./config/database");
-
-dotenv.config({ path: "config.env" });
 
 const authRoute = require("./routes/authRoute");
 const usersRoute = require("./routes/usersRoute");
@@ -33,8 +32,18 @@ app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/posts", postRoute);
 
-// Running the server
+
+
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-  console.log(`server is running on PORT : ${PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`App Running on port ${PORT}`);
 });
+
+process.on("unhandledRejection", (error) => {
+  console.log(`unhandledRejection Error : ${error.name} | ${error.message}`);
+  server.close(() => {
+    console.error("Shutting down.... ");
+    process.exit(1);
+  });
+});
+
