@@ -1,94 +1,58 @@
 const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
-const Joi = require("joi");
+const bcrypt = require("bcryptjs");
 
-const UserSchema = new mongoose.Schema(
-  {
-    username: {
-      type: String,
-      reuired: ["true", "username reuired"],
-      trim: true,
-      minlength: 2,
-      maxlength: 100,
-    },
-    email: {
-      type: String,
-      reuired: ["true", "email reuired"],
-      unique: true,
-      trim: true,
-      minlength: 5,
-      maxlength: 100,
-    },
-    password: {
-      type: String,
-      reuired: ["true", "password reuired"],
-      trim: true,
-      minlength: 8,
-    },
-    profilePhoto: {
-      type: Object,
-      default: {
-        url: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-        publicId: null,
-      },
-    },
-    bio: {
-      type: String,
-    },
-    isAdmin: {
-      type: Boolean,
-      default: false,
-    },
-    isAccountVerified: {
-      type: Boolean,
-      default: false,
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    trim: true,
+    required: [true, "Name required"],
+    minLength: [3, "Too short user name"],
+  },
+  slug: {
+    type: String,
+    lowercase: true,
+  },
+  email: {
+    type: String,
+    required: [true, "email Required"],
+    unique: true,
+    lowercase: true,
+  },
+  profilePhoto: {
+    type: Object,
+    default: {
+      url: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+      publicId: null,
     },
   },
-  { timestamps: true }
-);
-// Generate Auth Token
-UserSchema.methods.generateAuthToken = function () {
-  return jwt.sign(
-    { id: this._id, isAdmin: this.isAdmin },
-    process.env.JWT_SECRET_KEY,
-    {
-      expiresIn: process.env.JWT_EXPIRATION_DATE,
-    }
-  );
-};
+  password: {
+    type: String,
+    required: [true, "password required"],
+    minLength: [6, "Too short password"],
+  },
 
-// Validate Register User
-const User = mongoose.model("User", UserSchema);
+  passwordChangedAt: Date,
+  passwordResetCode: String,
+  passwordResetExpires: Date,
+  passwordResetVerified: Boolean,
 
-function validateRegisterUser(obj) {
-  const schema = Joi.object({
-    username: Joi.string().trim().min(2).max(100).required(),
-    email: Joi.string().trim().min(5).max(100).required().email(),
-    password: Joi.string().trim().min(8).required(),
-  });
-  return schema.validate(obj);
-}
+  phone: String,
+  profileImg: String,
 
-function validateLoginUser(obj) {
-  const schema = Joi.object({
-    email: Joi.string().trim().min(5).max(100).required().email(),
-    password: Joi.string().trim().min(8).required(),
-  });
-  return schema.validate(obj);
-}
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
+  },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+});
 
-function validateUpdateUser(obj) {
-  const schema = Joi.object({
-    username: Joi.string().trim().min(2).max(100),
-    password: Joi.string().trim().min(8),
-    bio: Joi.string(),
-  });
-  return schema.validate(obj);
-}
+userSchema.pre("save", function (next) {
+  this.password = bcrypt.hashSync(this.password, 12);
+  next();
+});
 
-module.exports = {
-  User,
-  validateRegisterUser,
-  validateLoginUser,
-  validateUpdateUser,
-};
+module.exports = mongoose.model("User", userSchema);
