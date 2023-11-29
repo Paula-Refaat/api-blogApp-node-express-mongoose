@@ -5,6 +5,8 @@ dotenv.config({ path: "config.env" });
 
 const dbConnection = require("./config/database");
 
+const ApiError = require("./utils/ApiError");
+
 const authRoute = require("./routes/authRoute");
 const usersRoute = require("./routes/usersRoute");
 const postRoute = require("./routes/postRoute");
@@ -32,7 +34,10 @@ app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/posts", postRoute);
 
-
+// Handel unhandelling Routes
+app.all("*", (req, res, next) => {
+  next(new ApiError(`Can't found this Route : ${req.originalUrl}`, 400));
+});
 
 const PORT = process.env.PORT || 8000;
 const server = app.listen(PORT, () => {
@@ -46,4 +51,3 @@ process.on("unhandledRejection", (error) => {
     process.exit(1);
   });
 });
-
