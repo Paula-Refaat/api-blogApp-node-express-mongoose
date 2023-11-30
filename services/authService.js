@@ -6,6 +6,7 @@ const ApiError = require("../utils/ApiError");
 const UserAuthorization = require("../utils/UserAuthorization");
 const sendEmail = require("../utils/sendEmail");
 const createToken = require("../utils/createToken");
+const User = require("../models/userModel");
 
 // @desc    User Register
 // @route   POST /api/v1/auth/signup
