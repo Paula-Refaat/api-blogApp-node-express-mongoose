@@ -2,10 +2,11 @@ const asyncHandler = require("express-async-handler");
 const { hashSync } = require("bcryptjs");
 const ApiError = require("../utils/ApiError");
 const createToken = require("../utils/createToken");
+const UserAuthorization = require("../utils/UserAuthorization");
 const User = require("../models/userModel");
 
 // @desc    Get all user Profile
-// @router  /api/users
+// @router  GET /api/v1/users
 // @access  private(admin only)
 exports.getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find().select("-password");
@@ -13,7 +14,7 @@ exports.getAllUsers = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get Logged user
-// @router  GET /api/users/getMe
+// @router  GET /api/v1/users/getMe
 // @access  public
 exports.getLoggedUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).select("-password");
@@ -24,13 +25,13 @@ exports.getLoggedUser = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update Logged user password
-// @route   put /api/users/updateMyPassword
+// @route   put /api/v1/users/updateMyPassword
 // @access  Private/protected
 exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
-      password: hashSync(req.body.password),
+      password: hashSync(req.body.newPassword),
       passwordChangedAt: Date.now(),
     },
     { new: true }
@@ -40,7 +41,7 @@ exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Update Logged user date (without password, role)
-// @route   put /api/users/updateMe
+// @route   put /api/v1/users/updateMe
 // @access  Private/protected
 exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
   const updatedUser = await User.findByIdAndUpdate(
@@ -57,7 +58,31 @@ exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
   res.status(200).json({ date: updatedUser });
 });
 
+// @desc    Deactivate Logged user
+// @route   DELETE /api/users/deActiveMe
+// @access  Private/protected
+exports.deleteLoggedUserData = asyncHandler(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user._id, { active: false });
 
+  res.status(204).json({ status: "success" });
+});
+
+// @desc    Activate Logged user
+// @route   DELETE /api/users/activeMe
+// @access  Private/protected
+exports.activeLoggedUserData = asyncHandler(async (req, res, next) => {
+  const userAuthorization = new UserAuthorization();
+
+  const token = userAuthorization.getToken(req.headers.authorization);
+  const decoded = userAuthorization.tokenVerifcation(token);
+  const currentUser = await userAuthorization.checkCurrentUserExist(decoded);
+  if (currentUser.active) {
+    return next(new ApiError("Your Account is already active", 400));
+  }
+  await User.findByIdAndUpdate(currentUser._id, { active: true });
+
+  res.status(200).json({ data: "Your account has been activated" });
+});
 
 //@TODO
 

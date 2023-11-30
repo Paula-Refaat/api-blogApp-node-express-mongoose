@@ -4,6 +4,8 @@ const {
   getLoggedUser,
   updateLoggedUserPassword,
   updateLoggedUserData,
+  deleteLoggedUserData,
+  activeLoggedUserData,
 } = require("../services/userService");
 const {
   updateLoggedUserPasswordValidator,
@@ -27,3 +29,6 @@ router.put(
   updateLoggedUserValidator,
   updateLoggedUserData
 );
+router.delete("/deleteMe", authService.protect, deleteLoggedUserData);
+router.delete("/activeMe", activeLoggedUserData);
+module.exports = router;

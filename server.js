@@ -9,6 +9,7 @@ const globalError = require("./middleware/errorMiddleware");
 const ApiError = require("./utils/ApiError");
 
 const authRoute = require("./routes/authRoute");
+const userRoute = require("./routes/userRoute");
 
 // Connection to db
 dbConnection();
@@ -30,6 +31,7 @@ app.use(express.json());
 
 // Mount Routers
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/users", userRoute);
 
 // Handel unhandelling Routes
 app.all("*", (req, res, next) => {
