@@ -1,41 +1,29 @@
-const photoUpload = require("../middleware/photoUpload");
-const validateObjectId = require("../middleware/validateObjectId");
-const {
-  verifyTokenAndAdmin,
-  verifyTokenAndOnlyUser,
-  verifyToken,
-  verifyTokenAndAuthorization,
-} = require("../middleware/verifyToken");
+const authService = require("../services/authService");
 const {
   getAllUsers,
-  getUserProfile,
-  updateUserProfile,
-  profilePhotoUpload,
-  deleteUserProfile,
+  getLoggedUser,
+  updateLoggedUserPassword,
+  updateLoggedUserData,
 } = require("../services/userService");
+const {
+  updateLoggedUserPasswordValidator,
+  updateLoggedUserValidator,
+} = require("../utils/validators/userValidator");
 
 const router = require("express").Router();
 
-router.get("/profile", verifyTokenAndAdmin, getAllUsers);
-router.get("/profile/:id", validateObjectId, getUserProfile);
+router.get("/", authService.protect, authService.allowTo("admin"), getAllUsers);
+
+router.get("/getMe", authService.protect, getLoggedUser);
 router.put(
-  "/profile/:id",
-  validateObjectId,
-  verifyTokenAndOnlyUser,
-  updateUserProfile
+  "/changeMyPassword",
+  authService.protect,
+  updateLoggedUserPasswordValidator,
+  updateLoggedUserPassword
 );
-router.post(
-  "/profile/profile-photo-upload",
-  verifyToken,
-  photoUpload.single("image"),
-  profilePhotoUpload
+router.put(
+  "/updateMe",
+  authService.protect,
+  updateLoggedUserValidator,
+  updateLoggedUserData
 );
-
-router.delete(
-  "/profile/:id",
-  validateObjectId,
-  verifyTokenAndAuthorization,
-  deleteUserProfile
-);
-
-module.exports = router;

@@ -5,12 +5,10 @@ dotenv.config({ path: "config.env" });
 
 const dbConnection = require("./config/database");
 
-const ApiError = require("./utils/ApiError");
 const globalError = require("./middleware/errorMiddleware");
+const ApiError = require("./utils/ApiError");
 
 const authRoute = require("./routes/authRoute");
-const usersRoute = require("./routes/usersRoute");
-const postRoute = require("./routes/postRoute");
 
 // Connection to db
 dbConnection();
@@ -32,8 +30,6 @@ app.use(express.json());
 
 // Mount Routers
 app.use("/api/v1/auth", authRoute);
-app.use("/api/users", usersRoute);
-app.use("/api/posts", postRoute);
 
 // Handel unhandelling Routes
 app.all("*", (req, res, next) => {

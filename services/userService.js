@@ -1,60 +1,67 @@
-const fs = require("fs");
 const asyncHandler = require("express-async-handler");
-const bcrypt = require("bcryptjs");
-const { User, validateUpdateUser } = require("../modules/userModel");
-const {
-  cloudinaryRemoveImage,
-  cloudinaryUploadImage,
-} = require("../utils/cloudinary");
+const { hashSync } = require("bcryptjs");
+const ApiError = require("../utils/ApiError");
+const createToken = require("../utils/createToken");
+const User = require("../models/userModel");
 
 // @desc    Get all user Profile
-// @router  /api/users/profile
+// @router  /api/users
 // @access  private(admin only)
 exports.getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find().select("-password");
   res.status(200).json(users);
 });
 
-// @desc    Get user Profile
-// @router  GET /api/users/profile/:id
+// @desc    Get Logged user
+// @router  GET /api/users/getMe
 // @access  public
-exports.getUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id).select("-password");
+exports.getLoggedUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select("-password");
   if (!user) {
-    return res.status(404).json({ message: "user not found" });
+    return next(new ApiError(`user not found`, 404));
   }
   res.status(200).json(user);
 });
 
-// @desc    Update user Profile
-// @router  PUT /api/users/profile/:id
-// @access  only user update
-exports.updateUserProfile = asyncHandler(async (req, res, next) => {
-  // 1. Validation
-  const { error } = validateUpdateUser(req.body);
-  if (error) {
-    return res.status(400).json({ message: error.details[0].message });
-  }
-
-  if (req.body.password) {
-    const salt = await bcrypt.genSalt(10);
-    req.body.password = await bcrypt.hash(req.body.password, salt);
-  }
-  const updatedUser = await User.findByIdAndUpdate(
-    req.params.id,
+// @desc    Update Logged user password
+// @route   put /api/users/updateMyPassword
+// @access  Private/protected
+exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
     {
-      $set: {
-        username: req.body.username,
-        password: req.body.password,
-        bio: req.body.bio,
-      },
+      password: hashSync(req.body.password),
+      passwordChangedAt: Date.now(),
     },
     { new: true }
-  ).select("-password");
-
-  res.status(200).json(updatedUser);
+  );
+  const token = createToken(user._id);
+  res.status(200).json({ date: user, token });
 });
 
+// @desc    Update Logged user date (without password, role)
+// @route   put /api/users/updateMe
+// @access  Private/protected
+exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+      slug: req.body.slug,
+    },
+    { new: true }
+  );
+
+  res.status(200).json({ date: updatedUser });
+});
+
+
+
+//@TODO
+
+///////////////////////////////////////////////////////////////////////////////////
 // @desc    Profile Photo Upload
 // @router  POST /api/users/profile/profile-photo-upload
 // @access  private (only loged in user)
@@ -94,11 +101,9 @@ exports.profilePhotoUpload = asyncHandler(async (req, res, next) => {
     return error;
   }
 });
-
 // @desc   Delete User Profile (Account)
 // @router  POST /api/users/profile/:id
 // @access  private (only admin or user jims self)
-
 exports.deleteUserProfile = asyncHandler(async (req, res) => {
   // 1. Get the user from DB
   const user = await User.findById(req.params.id);
@@ -117,5 +122,5 @@ exports.deleteUserProfile = asyncHandler(async (req, res) => {
   // 7. Delete the user him self
   await User.findByIdAndDelete(req.params.id);
   // 8. Send a response to the client
-  res.status(200).json({message: "your profile has been deleted"})
+  res.status(200).json({ message: "your profile has been deleted" });
 });
