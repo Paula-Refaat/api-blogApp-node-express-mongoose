@@ -1,12 +1,11 @@
-const path = require("path");
 const multer = require("multer");
 
 // Phote Storage
 
 const photoStorage = multer.diskStorage({
-  //   destination: function (req, file, cb) {
-  //     cb(null,'images');
-  //   },
+  destination: function (req, file, cb) {
+    cb(null, "images");
+  },
   filename: function (req, file, cb) {
     if (file) {
       const ext = file.mimetype.split("/")[1];
@@ -37,4 +36,6 @@ const photoUpload = multer({
   limits: { fileSize: 1024 * 1024 }, // 1 megabyte
 });
 
-module.exports = photoUpload;
+
+// upload single image
+exports.uploadSingleImage = (fileName) => photoUpload.single(fileName);

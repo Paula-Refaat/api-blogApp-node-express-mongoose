@@ -1,3 +1,4 @@
+const photoUpload = require("../middleware/photoUpload");
 const authService = require("../services/authService");
 const {
   getAllUsers,
@@ -6,6 +7,8 @@ const {
   updateLoggedUserData,
   deleteLoggedUserData,
   activeLoggedUserData,
+  profilePhotoUpload,
+  uploadUserImage,
 } = require("../services/userService");
 const {
   updateLoggedUserPasswordValidator,
@@ -13,6 +16,13 @@ const {
 } = require("../utils/validators/userValidator");
 
 const router = require("express").Router();
+
+router.post(
+  "/upload-profile-photo",
+  authService.protect,
+  uploadUserImage,
+  profilePhotoUpload
+);
 
 router.get("/", authService.protect, authService.allowTo("admin"), getAllUsers);
 
@@ -23,6 +33,7 @@ router.put(
   updateLoggedUserPasswordValidator,
   updateLoggedUserPassword
 );
+
 router.put(
   "/updateMe",
   authService.protect,
@@ -31,4 +42,5 @@ router.put(
 );
 router.delete("/deleteMe", authService.protect, deleteLoggedUserData);
 router.delete("/activeMe", activeLoggedUserData);
+
 module.exports = router;

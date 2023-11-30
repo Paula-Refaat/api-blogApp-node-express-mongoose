@@ -5,6 +5,11 @@ const createToken = require("../utils/createToken");
 const UserAuthorization = require("../utils/UserAuthorization");
 const User = require("../models/userModel");
 
+const { uploadSingleImage } = require("../middleware/photoUpload");
+
+// Upload single image
+exports.uploadUserImage = uploadSingleImage("image");
+
 // @desc    Get all user Profile
 // @router  GET /api/v1/users
 // @access  private(admin only)
@@ -84,48 +89,20 @@ exports.activeLoggedUserData = asyncHandler(async (req, res, next) => {
   res.status(200).json({ data: "Your account has been activated" });
 });
 
-//@TODO
-
-///////////////////////////////////////////////////////////////////////////////////
 // @desc    Profile Photo Upload
 // @router  POST /api/users/profile/profile-photo-upload
 // @access  private (only loged in user)
 exports.profilePhotoUpload = asyncHandler(async (req, res, next) => {
   // 1. Validation
   if (!req.file) {
-    return res.status(400).json({ message: "no file provided" });
+    return next(new ApiError("no file provided", 400));
   }
-  // 2. Upload to cloudinary
-  const result = await cloudinaryUploadImage(req.file.path);
-
-  // 3. Get the user from DB
-  const user = await User.findById(req.user.id);
-
-  // 4. Delete the old profile photo if exist
-  if (user.profilePhoto.publicId !== null) {
-    await cloudinaryRemoveImage(user.profilePhoto.publicId);
-  }
-
-  // 5. Change the profilePhoto field in the DB
-  user.profilePhoto = {
-    url: result.secure_url,
-    publicId: result.public_id,
-  };
-  await user.save();
-
-  // 6. Send respone to client
-  res.status(200).json({
-    message: "your profile photo uploaded successfully",
-    profilePhoto: { url: result.secure_url, publicId: result.public_id },
-  });
-
-  // 7. Remove image from the server
-  try {
-    fs.unlinkSync(req.file.path);
-  } catch (error) {
-    return error;
-  }
+  res.status(200).json({ message: "Uploaded successfully" });
 });
+
+//@TODO
+///////////////////////////////////////////////////////////////////////////////////
+
 // @desc   Delete User Profile (Account)
 // @router  POST /api/users/profile/:id
 // @access  private (only admin or user jims self)
