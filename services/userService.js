@@ -1,8 +1,14 @@
+const fs = require("fs");
+const path = require("path");
 const asyncHandler = require("express-async-handler");
 const { hashSync } = require("bcryptjs");
 const ApiError = require("../utils/ApiError");
 const createToken = require("../utils/createToken");
 const UserAuthorization = require("../utils/UserAuthorization");
+const {
+  cloudinaryRemoveImage,
+  cloudinaryUploadImage,
+} = require("../utils/cloudinary");
 const User = require("../models/userModel");
 
 const { uploadSingleImage } = require("../middleware/photoUpload");
@@ -97,7 +103,28 @@ exports.profilePhotoUpload = asyncHandler(async (req, res, next) => {
   if (!req.file) {
     return next(new ApiError("no file provided", 400));
   }
-  res.status(200).json({ message: "Uploaded successfully" });
+  const imagePath = path.join(__dirname, `../images/${req.file.filename}`);
+  const result = await cloudinaryUploadImage(imagePath);
+
+  const user = await User.findById(req.user._id);
+
+  if (user.profilePhoto.publicId !== null) {
+    await cloudinaryRemoveImage(user.profilePhoto.publicId);
+  }
+  user.profilePhoto = {
+    url: result.secure_url,
+    publicId: result.public_id,
+  };
+  await user.save();
+
+  res.status(200).json({
+    message: "Your profile updated succssfully",
+    url: result.secure_url,
+    publicId: result.public_id,
+    user,
+  });
+
+  fs.unlinkSync(imagePath);
 });
 
 //@TODO

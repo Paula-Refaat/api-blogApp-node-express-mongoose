@@ -37,7 +37,6 @@ const userSchema = new mongoose.Schema({
   passwordResetVerified: Boolean,
 
   phone: String,
-  profileImg: String,
 
   role: {
     type: String,
