@@ -5,28 +5,33 @@ const PostSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      require: [true, "Post title required"],
+      required: [true, "Post title required"],
       trim: true,
       minlength: 2,
       maxlength: 100,
     },
     description: {
       type: String,
-      require: [true, "Post description required"],
+      required: [true, "Post description required"],
       trim: true,
       minlength: 10,
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      require: true,
+      required: true,
     },
     image: {
-      type: object,
+      type: Object,
       default: {
         url: "",
         publicId: null,
       },
+    },
+    category: {
+      type: String,
+      required: true,
+      trim: true,
     },
     likes: [
       {

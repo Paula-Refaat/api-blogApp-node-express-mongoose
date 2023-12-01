@@ -1,5 +1,4 @@
 const fs = require("fs");
-const path = require("path");
 const asyncHandler = require("express-async-handler");
 const { hashSync } = require("bcryptjs");
 const ApiError = require("../utils/ApiError");
@@ -103,8 +102,8 @@ exports.profilePhotoUpload = asyncHandler(async (req, res, next) => {
   if (!req.file) {
     return next(new ApiError("no file provided", 400));
   }
-  const imagePath = path.join(__dirname, `../images/${req.file.filename}`);
-  const result = await cloudinaryUploadImage(imagePath);
+  console.log(req.file);
+  const result = await cloudinaryUploadImage(req.file.path);
 
   const user = await User.findById(req.user._id);
 
@@ -121,10 +120,9 @@ exports.profilePhotoUpload = asyncHandler(async (req, res, next) => {
     message: "Your profile updated succssfully",
     url: result.secure_url,
     publicId: result.public_id,
-    user,
   });
 
-  fs.unlinkSync(imagePath);
+  fs.unlinkSync(req.file.path);
 });
 
 //@TODO

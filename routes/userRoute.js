@@ -1,4 +1,3 @@
-const photoUpload = require("../middleware/photoUpload");
 const authService = require("../services/authService");
 const {
   getAllUsers,
