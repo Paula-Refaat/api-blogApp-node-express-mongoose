@@ -69,7 +69,7 @@ exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Deactivate Logged user
-// @route   DELETE /api/users/deActiveMe
+// @route   DELETE /api/v1/users/deActiveMe
 // @access  Private/protected
 exports.deleteLoggedUserData = asyncHandler(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user._id, { active: false });
@@ -78,7 +78,7 @@ exports.deleteLoggedUserData = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Activate Logged user
-// @route   DELETE /api/users/activeMe
+// @route   DELETE /api/v1/users/activeMe
 // @access  Private/protected
 exports.activeLoggedUserData = asyncHandler(async (req, res, next) => {
   const userAuthorization = new UserAuthorization();
@@ -95,7 +95,7 @@ exports.activeLoggedUserData = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Profile Photo Upload
-// @router  POST /api/users/profile/profile-photo-upload
+// @router  POST /api/v1/users/profile/profile-photo-upload
 // @access  private (only loged in user)
 exports.profilePhotoUpload = asyncHandler(async (req, res, next) => {
   // 1. Validation
@@ -129,8 +129,8 @@ exports.profilePhotoUpload = asyncHandler(async (req, res, next) => {
 ///////////////////////////////////////////////////////////////////////////////////
 
 // @desc   Delete User Profile (Account)
-// @router  POST /api/users/profile/:id
-// @access  private (only admin or user jims self)
+// @router  POST /api/v1/users/profile/:id
+// @access  private (only admin or user him self)
 exports.deleteUserProfile = asyncHandler(async (req, res) => {
   // 1. Get the user from DB
   const user = await User.findById(req.params.id);

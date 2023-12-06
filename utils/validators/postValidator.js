@@ -1,5 +1,6 @@
 const { check } = require("express-validator");
 const validatorMiddleware = require("../../middleware/validatorMiddleware");
+const { custom } = require("joi");
 
 exports.createPostValidator = [
   check("title")
@@ -15,5 +16,7 @@ exports.createPostValidator = [
     .isLength({ min: 2 })
     .withMessage("Post description too short"),
   check("category").notEmpty().withMessage("Post category required"),
+  check("user").isMongoId().withMessage("invalid userId formate"),
   validatorMiddleware,
 ];
+

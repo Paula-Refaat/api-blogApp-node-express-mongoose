@@ -6,6 +6,7 @@ const {
   uploadPostImageToServer,
   setUserIdToBody,
   uploadPostImageTocloudinary,
+  getAllPosts,
 } = require("../services/postServices");
 const { createPostValidator } = require("../utils/validators/postValidator");
 
@@ -18,5 +19,7 @@ router.post(
   createPostValidator,
   createPost
 );
+
+router.get("/", authService.protect, getAllPosts);
 
 module.exports = router;
