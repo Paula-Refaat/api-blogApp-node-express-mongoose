@@ -33,7 +33,7 @@ exports.deletePostImagefromcloudinary = asyncHandler(async (req, res, next) => {
   if (!post) {
     return next(new ApiError(`post not found for this id ${req.params.id}`));
   }
-  await cloudinaryRemoveImage(post.image.postId);
+  await cloudinaryRemoveImage(post.image.publicId);
   next();
 });
 
