@@ -7,8 +7,12 @@ const {
   setUserIdToBody,
   uploadPostImageTocloudinary,
   getAllPosts,
+  getOnePost,
 } = require("../services/postServices");
-const { createPostValidator } = require("../utils/validators/postValidator");
+const {
+  createPostValidator,
+  getOnePostValidator,
+} = require("../utils/validators/postValidator");
 
 router.post(
   "/",
@@ -18,6 +22,14 @@ router.post(
   setUserIdToBody,
   createPostValidator,
   createPost
+);
+
+router.get(
+  "/",
+  authService.protect,
+  authService.allowTo("admin", "user"),
+  getOnePostValidator,
+  getOnePost
 );
 
 router.get("/", authService.protect, getAllPosts);

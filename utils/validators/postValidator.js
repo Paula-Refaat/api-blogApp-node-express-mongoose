@@ -1,6 +1,5 @@
 const { check } = require("express-validator");
 const validatorMiddleware = require("../../middleware/validatorMiddleware");
-const { custom } = require("joi");
 
 exports.createPostValidator = [
   check("title")
@@ -20,3 +19,7 @@ exports.createPostValidator = [
   validatorMiddleware,
 ];
 
+exports.getOnePostValidator = [
+  check("id").isMongoId().withMessage("invalid id formate"),
+  validatorMiddleware,
+];

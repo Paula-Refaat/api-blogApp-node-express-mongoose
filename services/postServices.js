@@ -47,3 +47,16 @@ exports.getAllPosts = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ page: page, limit: limit, posts });
 });
+
+// @desc    Get Specific post
+// @router  Get /api/v1/posts
+// @access  public
+exports.getOnePost = asyncHandler(async (req, res, next) => {
+  const { postId } = req.params.id;
+
+  const post = await Post.findById(postId);
+  if (!post) {
+    return next(new ApiError(`post not found for this id ${postId}`));
+  }
+  res.status(200).json({ data: post });
+});
