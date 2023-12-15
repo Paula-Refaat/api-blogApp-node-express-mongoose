@@ -8,10 +8,13 @@ const {
   uploadPostImageTocloudinary,
   getAllPosts,
   getOnePost,
+  deletePostImagefromcloudinary,
+  updatePost,
 } = require("../services/postServices");
 const {
   createPostValidator,
   getOnePostValidator,
+  updatePostValidator,
 } = require("../utils/validators/postValidator");
 
 router.post(
@@ -30,6 +33,17 @@ router.get(
   authService.allowTo("admin", "user"),
   getOnePostValidator,
   getOnePost
+);
+
+router.put(
+  "/:id",
+  authService.protect,
+  authService.allowTo("user"),
+  deletePostImagefromcloudinary,
+  uploadPostImageToServer,
+  uploadPostImageTocloudinary,
+  updatePostValidator,
+  updatePost
 );
 
 router.get("/", authService.protect, getAllPosts);

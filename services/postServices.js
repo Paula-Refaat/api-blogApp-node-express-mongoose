@@ -27,6 +27,16 @@ exports.uploadPostImageTocloudinary = async (req, res, next) => {
   next();
 };
 
+// @desc    delete post image from cloudinary
+exports.deletePostImagefromcloudinary = asyncHandler(async (req, res, next) => {
+  const post = await Post.findById(req.params.id);
+  if (!post) {
+    return next(new ApiError(`post not found for this id ${req.params.id}`));
+  }
+  await cloudinaryRemoveImage(post.image.postId);
+  next();
+});
+
 // @desc    Create new post
 // @router  POST /api/v1/posts
 // @access  public/protected
@@ -57,6 +67,19 @@ exports.getOnePost = asyncHandler(async (req, res, next) => {
   const post = await Post.findById(postId);
   if (!post) {
     return next(new ApiError(`post not found for this id ${postId}`));
+  }
+  res.status(200).json({ data: post });
+});
+
+// @desc    Update Specific post
+// @router  PUT /api/v1/posts
+// @access  private/protected
+exports.updatePost = asyncHandler(async (req, res, next) => {
+  const post = await Post.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+  if (!post) {
+    return next(new ApiError(`post not found for this id ${req.params.id}`));
   }
   res.status(200).json({ data: post });
 });
