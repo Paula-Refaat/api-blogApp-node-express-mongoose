@@ -62,3 +62,28 @@ exports.updatePostValidator = [
   check("user").isMongoId().withMessage("invalid userId formate").optional(),
   validatorMiddleware,
 ];
+
+exports.deletePostValidator = [
+  check("id")
+    .isMongoId()
+    .withMessage("invalid id formate")
+    .custom((val, { req }) => {
+      if (req.user.role === "user") {
+        return Post.findById(val).then((post) => {
+          if (!post) {
+            return Promise.reject(
+              new Error(`There is no post for this id ${val}`)
+            );
+          }
+          if (post.user.toString() != req.user._id.toString()) {
+            return Promise.reject(
+              new Error("You are not allowed to perform this action")
+            );
+          }
+          return true;
+        });
+      }
+      return true;
+    }),
+  validatorMiddleware,
+];

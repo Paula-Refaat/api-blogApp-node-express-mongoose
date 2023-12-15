@@ -10,11 +10,13 @@ const {
   getOnePost,
   deletePostImagefromcloudinary,
   updatePost,
+  deletePost,
 } = require("../services/postServices");
 const {
   createPostValidator,
   getOnePostValidator,
   updatePostValidator,
+  deletePostValidator,
 } = require("../utils/validators/postValidator");
 
 router.post(
@@ -44,6 +46,15 @@ router.put(
   uploadPostImageTocloudinary,
   updatePostValidator,
   updatePost
+);
+
+router.delete(
+  "/:id",
+  authService.protect,
+  authService.allowTo("user", "admin"),
+  deletePostImagefromcloudinary,
+  deletePostValidator,
+  deletePost
 );
 
 router.get("/", authService.protect, getAllPosts);

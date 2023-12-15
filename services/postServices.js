@@ -81,3 +81,16 @@ exports.updatePost = asyncHandler(async (req, res, next) => {
   }
   res.status(200).json({ data: post });
 });
+
+// @desc    Delete Specific post
+// @router  DELETE /api/v1/posts/:id
+// @access  private/protected (admin and logged user)
+exports.deletePost = asyncHandler(async (req, res, next) => {
+  const post = await Post.findByIdAndDelete(req.params.id, req.body, {
+    new: true,
+  });
+  if (!post) {
+    return next(new ApiError(`post not found for this id ${req.params.id}`));
+  }
+  res.status(204);
+});
