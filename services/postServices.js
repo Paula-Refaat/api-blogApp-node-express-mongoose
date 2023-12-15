@@ -84,7 +84,7 @@ exports.updatePost = asyncHandler(async (req, res, next) => {
 
 // @desc    Delete Specific post
 // @router  DELETE /api/v1/posts/:id
-// @access  private/protected (admin and logged user)
+// @access  private/protected (admin and logged user for his post)
 exports.deletePost = asyncHandler(async (req, res, next) => {
   const post = await Post.findByIdAndDelete(req.params.id, req.body, {
     new: true,
