@@ -94,3 +94,32 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
   }
   res.status(204);
 });
+
+// @desc    Make Like On Specific Sost
+// @router  PUT /api/v1/posts/like/:id
+// @access  public
+
+exports.likePost = asyncHandler(async (req, res, next) => {
+  let post = await Post.findById(req.params.id);
+  if (!post) {
+    return next(new ApiError(`post not found for this id ${req.params.id}`));
+  }
+  const isUserLikedOnPostBefore = post.likes.find(
+    (user) => user.toString() === req.user._id.toString()
+  );
+
+  if (isUserLikedOnPostBefore) {
+    post = await Post.findByIdAndUpdate(
+      req.params.id,
+      { $pull: { likes: req.user._id } },
+      { new: true }
+    );
+  } else {
+    post = await Post.findByIdAndUpdate(
+      req.params.id,
+      { $push: { likes: req.user._id } },
+      { new: true }
+    );
+  }
+  res.status(200).json(post);
+});

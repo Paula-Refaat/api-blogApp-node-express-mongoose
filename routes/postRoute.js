@@ -11,6 +11,7 @@ const {
   deletePostImagefromcloudinary,
   updatePost,
   deletePost,
+  likePost,
 } = require("../services/postServices");
 const {
   createPostValidator,
@@ -56,6 +57,8 @@ router.delete(
   deletePostValidator,
   deletePost
 );
+
+router.put("/like/:id", authService.protect, likePost);
 
 router.get("/", authService.protect, getAllPosts);
 
