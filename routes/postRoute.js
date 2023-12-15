@@ -30,8 +30,10 @@ router.post(
   createPost
 );
 
+router.get("/", authService.protect, getAllPosts);
+
 router.get(
-  "/",
+  "/:id",
   authService.protect,
   authService.allowTo("admin", "user"),
   getOnePostValidator,
@@ -42,10 +44,10 @@ router.put(
   "/:id",
   authService.protect,
   authService.allowTo("user"),
+  updatePostValidator,
   deletePostImagefromcloudinary,
   uploadPostImageToServer,
   uploadPostImageTocloudinary,
-  updatePostValidator,
   updatePost
 );
 
@@ -53,13 +55,11 @@ router.delete(
   "/:id",
   authService.protect,
   authService.allowTo("user", "admin"),
-  deletePostImagefromcloudinary,
   deletePostValidator,
+  deletePostImagefromcloudinary,
   deletePost
 );
 
 router.put("/like/:id", authService.protect, likePost);
-
-router.get("/", authService.protect, getAllPosts);
 
 module.exports = router;

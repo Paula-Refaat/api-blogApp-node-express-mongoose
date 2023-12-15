@@ -80,7 +80,7 @@ exports.deletePostValidator = [
               new Error("You are not allowed to perform this action")
             );
           }
-          return true;
+          // return true;
         });
       }
       return true;

@@ -92,13 +92,12 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
   if (!post) {
     return next(new ApiError(`post not found for this id ${req.params.id}`));
   }
-  res.status(204);
+  res.status(204).json({ data: "post deleted success" });
 });
 
 // @desc    Make Like On Specific Sost
 // @router  PUT /api/v1/posts/like/:id
 // @access  public
-
 exports.likePost = asyncHandler(async (req, res, next) => {
   let post = await Post.findById(req.params.id);
   if (!post) {
