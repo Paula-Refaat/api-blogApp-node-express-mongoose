@@ -59,7 +59,7 @@ exports.getAllPosts = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Get Specific post
-// @router  Get /api/v1/posts
+// @router  Get /api/v1/posts/:id
 // @access  public
 exports.getOnePost = asyncHandler(async (req, res, next) => {
   const { postId } = req.params.id;
@@ -72,7 +72,7 @@ exports.getOnePost = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Update Specific post
-// @router  PUT /api/v1/posts
+// @router  PUT /api/v1/posts/:id
 // @access  private/protected
 exports.updatePost = asyncHandler(async (req, res, next) => {
   const post = await Post.findByIdAndUpdate(req.params.id, req.body, {
