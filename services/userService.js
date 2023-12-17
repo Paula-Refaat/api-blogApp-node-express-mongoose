@@ -27,7 +27,9 @@ exports.getAllUsers = asyncHandler(async (req, res) => {
 // @router  GET /api/v1/users/getMe
 // @access  public
 exports.getLoggedUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id).select("-password");
+  const user = await User.findById(req.user._id)
+    .select("-password")
+    .populate("posts");
   if (!user) {
     return next(new ApiError(`user not found`, 404));
   }
