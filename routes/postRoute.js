@@ -20,6 +20,10 @@ const {
   deletePostValidator,
 } = require("../utils/validators/postValidator");
 
+const commentRoute = require("./commentRoute");
+
+router.use("/:postId/comments", commentRoute);
+
 router.post(
   "/",
   authService.protect,

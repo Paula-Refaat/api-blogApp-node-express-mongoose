@@ -11,6 +11,7 @@ const ApiError = require("./utils/ApiError");
 const authRoute = require("./routes/authRoute");
 const userRoute = require("./routes/userRoute");
 const postRoute = require("./routes/postRoute");
+const commentRoute = require("./routes/commentRoute");
 
 // Connection to db
 dbConnection();
@@ -34,6 +35,7 @@ app.use(express.json());
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/posts", postRoute);
+app.use("/api/v1/comments", commentRoute);
 
 // Handel unhandelling Routes
 app.all("*", (req, res, next) => {

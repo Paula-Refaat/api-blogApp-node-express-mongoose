@@ -29,7 +29,7 @@ exports.getOnePostValidator = [
 exports.updatePostValidator = [
   check("id")
     .isMongoId()
-    .withMessage("Invalid Review id format")
+    .withMessage("Invalid Post id format")
     .custom((val, { req }) =>
       Post.findById(val).then((post) => {
         if (!post) {
