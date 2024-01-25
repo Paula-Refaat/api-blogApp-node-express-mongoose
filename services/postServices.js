@@ -127,12 +127,13 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
 // @router  PUT /api/v1/posts/like/:id
 // @access  public
 exports.likePost = asyncHandler(async (req, res, next) => {
+  let message = "";
   let post = await Post.findById(req.params.id);
   if (!post) {
     return next(new ApiError(`post not found for this id ${req.params.id}`));
   }
   const isUserLikedOnPostBefore = post.likes.find(
-    (user) => user.toString() === req.user._id.toString()
+    (user) => user._id.toString() === req.user._id.toString()
   );
 
   if (isUserLikedOnPostBefore) {
@@ -141,12 +142,14 @@ exports.likePost = asyncHandler(async (req, res, next) => {
       { $pull: { likes: req.user._id } },
       { new: true }
     );
+    message = "You have successfully unliked the post";
   } else {
     post = await Post.findByIdAndUpdate(
       req.params.id,
       { $push: { likes: req.user._id } },
       { new: true }
     );
+    message = "You have successfully liked the post";
   }
-  res.status(200).json(post);
+  res.status(200).json({ message, likes: post.likes });
 });
