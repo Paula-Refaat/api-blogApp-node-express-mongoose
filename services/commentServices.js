@@ -31,7 +31,7 @@ exports.createComment = asyncHandler(async (req, res, next) => {
 // @router  POST /api/v1/comments
 // @access  public/protected
 exports.getAllComment = asyncHandler(async (req, res, next) => {
-  const comment = await Comment.find(req.filterObj);
+  const comment = await Comment.find(req.filterObj)
   res.status(200).json({ data: comment });
 });
 
@@ -63,9 +63,7 @@ exports.updateComment = asyncHandler(async (req, res, next) => {
 // @router  DELETE /api/v1/comments/:id
 // @access  private/protected (admin and logged user(make comment, post owner) for his comment)
 exports.deleteComment = asyncHandler(async (req, res, next) => {
-  const comment = await Comment.findByIdAndDelete(req.params.id, req.body, {
-    new: true,
-  });
+  const comment = await Comment.findByIdAndDelete(req.params.id);
   if (!comment) {
     return next(new ApiError(`comment not found for this id ${req.params.id}`));
   }

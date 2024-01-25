@@ -1,4 +1,5 @@
 const fs = require("fs");
+const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/ApiError");
 const { uploadSingleImage } = require("../middleware/photoUpload");
@@ -7,6 +8,7 @@ const {
   cloudinaryUploadImage,
 } = require("../utils/cloudinary");
 const Post = require("../models/postModel");
+const Comment = require("../models/commentModel");
 
 exports.uploadPostImageToServer = uploadSingleImage("image");
 
@@ -58,6 +60,21 @@ exports.getAllPosts = asyncHandler(async (req, res, next) => {
   res.status(200).json({ page: page, limit: limit, posts });
 });
 
+// @desc    Get All posts For Logged User
+// @router  Get /api/v1/posts/myPosts
+// @access  public(User)/protected
+exports.getAllLoggedUserPosts = asyncHandler(async (req, res, next) => {
+  const page = req.query.page * 1 || 1;
+  const limit = req.query.limit * 1 || 10;
+  const skip = (page - 1) * limit;
+
+  const posts = await Post.findOne({ user: req.user._id })
+    .limit(limit)
+    .skip(skip);
+
+  res.status(200).json({ page: page, limit: limit, posts });
+});
+
 // @desc    Get Specific post
 // @router  Get /api/v1/posts/:id
 // @access  public
@@ -86,13 +103,24 @@ exports.updatePost = asyncHandler(async (req, res, next) => {
 // @router  DELETE /api/v1/posts/:id
 // @access  private/protected (admin and logged user for his post)
 exports.deletePost = asyncHandler(async (req, res, next) => {
-  const post = await Post.findByIdAndDelete(req.params.id, req.body, {
-    new: true,
-  });
-  if (!post) {
-    return next(new ApiError(`post not found for this id ${req.params.id}`));
+  let session = null;
+  session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const post = await Post.findByIdAndDelete(req.params.id).session(session);
+    if (!post) {
+      return next(new ApiError(`post not found for this id ${req.params.id}`));
+    }
+    await Comment.deleteMany({ postId: post._id }).session(session);
+    await session.commitTransaction();
+    await session.endSession();
+    res.status(204).send();
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    next(error);
   }
-  res.status(204).json({ data: "post deleted success" });
 });
 
 // @desc    Make Like On Specific Sost

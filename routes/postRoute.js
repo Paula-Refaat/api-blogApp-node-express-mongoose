@@ -12,6 +12,7 @@ const {
   updatePost,
   deletePost,
   likePost,
+  getAllLoggedUserPosts,
 } = require("../services/postServices");
 const {
   createPostValidator,
@@ -35,6 +36,7 @@ router.post(
 );
 
 router.get("/", authService.protect, getAllPosts);
+router.get("/myPosts", authService.protect, getAllLoggedUserPosts);
 
 router.get(
   "/:id",
