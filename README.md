@@ -20,8 +20,7 @@ Technologies and tools used in the project:
    * morgan
    * multer
    * nodemailer
-   * slugify
-   * stripe
+   * slugify 
    * cloudinary
 
 <h2>🧐 Features</h2>
